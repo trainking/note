@@ -15,6 +15,7 @@
     - [基础配置（静态配置）](#基础配置静态配置)
   - [0x02 配置](#0x02-配置)
     - [serversTransport](#serverstransport)
+    - [EntryPoints](#entrypoints-1)
   - [0x03 实践](#0x03-实践)
     - [将http请求重定向到https](#将http请求重定向到https)
 
@@ -289,6 +290,65 @@ serversTransport:
 
 ----
 
+
+### EntryPoints
+
+----
+
+> 语法：address [host]:prot[/tcp | /udp]
+> 
+> 默认值：无
+> 
+> 作用域：EntryPoints
+
+指定监听的端口和协议。
+
+```yaml
+entryPoints:
+  web:
+    address: ":80"
+
+  websecure:
+    address: ":443"
+```
+----
+
+> 语法：forwardedHeaders
+> 
+> 默认值：无
+> 
+> 作用域：EntryPoints
+
+信任转发的`X-Forwarded-*`头信息。
+
+```
+## Static configuration
+entryPoints:
+  web:
+    address: ":80"
+    forwardedHeaders:
+      insecure: true   # 所有的拓展请求头都会被转发
+```
+----
+
+> 语法：trustedIPs
+> 
+> 默认值：无
+> 
+> 作用域：EntryPoints
+
+信任ip白名单
+
+```
+entryPoints:
+  web:
+    address: ":80"
+    forwardedHeaders:
+      trustedIPs:
+        - "127.0.0.1/32"
+        - "192.168.1.7"
+```
+----
 
 
 ## 0x03 实践
