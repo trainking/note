@@ -9,9 +9,13 @@
       - [file](#file)
     - [Routers](#routers)
     - [Middlewares](#middlewares)
-  - [0x01 配置](#0x01-配置)
+  - [0x01 安装与启动](#0x01-安装与启动)
+    - [Docker](#docker)
+    - [二进制文件](#二进制文件)
+    - [基础配置（静态配置）](#基础配置静态配置)
+  - [0x02 配置](#0x02-配置)
     - [serversTransport](#serverstransport)
-  - [0x02 实践](#0x02-实践)
+  - [0x03 实践](#0x03-实践)
     - [将http请求重定向到https](#将http请求重定向到https)
 
 ## 0x00 概念
@@ -114,7 +118,52 @@ http:
 
 ### Middlewares
 
-## 0x01 配置
+## 0x01 安装与启动
+
+### Docker
+
+```
+docker run -d -p 8080:8080 -p 80:80 -v $pwd/traefik.yaml:/etc/traefik/traefik.yml traefik:v2.4
+```
+
+### 二进制文件
+
+linux
+```
+# Compare this value to the one found in traefik-${traefik_version}_checksums.txt
+sha256sum ./traefik_${traefik_version}_linux_${arch}.tar.gz
+```
+
+mac
+```
+# Compare this value to the one found in traefik-${traefik_version}_checksums.txt
+shasum -a256 ./traefik_${traefik_version}_darwin_amd64.tar.gz
+```
+
+windows(powershell)
+```
+Get-FileHash ./traefik_${traefik_version}_windows_${arch}.zip -Algorithm SHA256
+```
+
+### 基础配置（静态配置）
+
+`Traefik` 分为静态配置和动态配置，静态配置是启动所必须之配置项；动态配置是代理服务转发的配置项。
+
+静态配置可以通过以下途径配置:
+
+* 启动命令行参数, `traefik --help`查看
+* 配置文件
+* 环境变量
+
+配置文件默认检索`/etc/traefik/traefik.yml`或`yaml` `toml`后缀的文件。
+
+可以通过命令行指定：
+
+```
+traefik --configFile=foo/bar/myconfigfile.yml
+```
+
+## 0x02 配置
 
 ### serversTransport
 
@@ -177,9 +226,72 @@ serversTransport:
   maxIdleConnsPerHost: 7
 ```
 
----
+----
 
-## 0x02 实践
+> 语法：forwardingTimeouts:
+> 
+> 默认值：无
+> 
+> 作用域：serversTransport
+
+将请求转发到服务端的一些超时配置。
+
+----
+
+> 语法：dialTimeout 1s
+> 
+> 默认值：30s
+> 
+> 作用域：serversTransport
+
+建立到后端的链接最大超时时间，0表示不超时控制。
+
+```yaml
+## Static configuration
+serversTransport:
+  forwardingTimeouts:
+    dialTimeout: 1s
+```
+
+----
+
+> 语法：responseHeaderTimeout 1s
+> 
+> 默认值：0s
+> 
+> 作用域：serversTransport
+
+请求完全写入成功之后，读取到响应头的时间，0表示不超时。
+
+```yaml
+## Static configuration
+serversTransport:
+  forwardingTimeouts:
+    responseHeaderTimeout: 1s
+```
+
+----
+
+> 语法：idleConnTimeout 1s
+> 
+> 默认值：90s
+> 
+> 作用域：serversTransport
+
+空闲（保持活动）连接在关闭之前保持空闲的最长时间，0表示不限制。
+
+```yaml
+## Static configuration
+serversTransport:
+  forwardingTimeouts:
+    idleConnTimeout: 1s
+```
+
+----
+
+
+
+## 0x03 实践
 
 ### 将http请求重定向到https
 
