@@ -5,9 +5,12 @@
 - [Traefik](#traefik)
   - [0x00 概念](#0x00-概念)
     - [Entrypoints](#entrypoints)
+      - [HTTP Options](#http-options)
     - [Providers](#providers)
       - [file](#file)
     - [Routers](#routers)
+      - [指定EntryPoints](#指定entrypoints)
+      - [Rule](#rule)
     - [Middlewares](#middlewares)
   - [0x01 安装与启动](#0x01-安装与启动)
     - [Docker](#docker)
@@ -64,6 +67,12 @@ entryPoints:
         - "192.168.0.1"
 ```
 
+#### HTTP Options
+
+Entrypoints 可以在入口点直接切入转发规则，但是只能运用与http。例如：
+
+[将http请求重定向到https](#将http请求重定向到https)
+
 ### Providers
 
 服务提供者，可以通过多种方式来发现服务。
@@ -116,6 +125,58 @@ http:
 ```
 
 ### Routers
+
+路由根据规则将请求转发到能处理它的服务上去，在这个过程中，会有中间件修改这个请求。
+
+```yaml
+http:
+  routers:
+    my-router:
+      rule: "Path(`/foo`)"
+      service: service-foo
+```
+
+#### 指定EntryPoints
+
+默认情况下，`HTTP Router`会接受所有EntryPoints的流量，然后通过规则来去区分，如指定`Host`:
+
+```yaml
+http:
+  routers:
+    Router-1:
+      # By default, routers listen to every entry points
+      rule: "Host(`example.com`)"
+      service: "service-1"
+```
+
+也可以指定从`EntryPoints`获取流量:
+
+```yaml
+http:
+  routers:
+    Router-1:
+      # won't listen to entry point web
+      entryPoints:
+        - "websecure"
+        - "other"
+      rule: "Host(`example.com`)"
+      service: "service-1"
+```
+
+#### Rule
+
+路由匹配规则，使用类函数的声明。`||`和`&&`来表示多个条件的逻辑关系。
+
+|Rule|说明|
+|:--|--|
+|Headers(`key`, `value`)|检查请求头中是否有存在`key:value`的头|
+|HeadersRegexp(`key`, `regexp`)|检查请求头中是否有存在key，且值满足`regexp`正则匹配|
+|Host(`example.com`, ...)|检查host请求头是否满足|
+|HostRegexp(`example.com`, `{subdomain:[a-z]+}.example.com`, ...)|检查host请求头是否能被正则匹配|
+|Method(`GET`, ...)|检查请求的方法是否匹配|
+|Path(`/path`, `/articles/{cat:[a-z]+}/{id:[0-9]+}`, ...)|检查请求路径是否匹配，可以用正则|
+|PathPrefix(`/products/`, `/articles/{cat:[a-z]+}/{id:[0-9]+}`)|匹配路径前缀，可以用正则|
+|Query(`foo=bar`, `bar=baz`)|检查query params|
 
 ### Middlewares
 
