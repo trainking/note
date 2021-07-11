@@ -11,6 +11,7 @@
     - [Routers](#routers)
       - [指定EntryPoints](#指定entrypoints)
       - [Rule](#rule)
+      - [优先级](#优先级)
     - [Middlewares](#middlewares)
   - [0x01 安装与启动](#0x01-安装与启动)
     - [Docker](#docker)
@@ -178,7 +179,58 @@ http:
 |PathPrefix(`/products/`, `/articles/{cat:[a-z]+}/{id:[0-9]+}`)|匹配路径前缀，可以用正则|
 |Query(`foo=bar`, `bar=baz`)|检查query params|
 
+**注意事项**：
+
+* `Host` 和 `HostRegexp` 不支持除了ASCII以外的字符，所以不支持中文域名
+* regexp 支持golang支持的所有格式
+* 使用 AND (&&) 和 OR (||) 运算符组合多个匹配器。可以使用括号进行组合  
+* 转发规则和中间件都是在到达服务之前生效
+* Path只转发到确定路径上，`/who/`与`/who` 不等价
+
+#### 优先级
+
+`traefik` 默认情况下，按规则长度降序排序匹配，所以最长长度具有最高优先级。
+
+如以下：
+
+```yaml
+## Dynamic configuration
+http:
+  routers:
+    Router-1:
+      rule: "HostRegexp(`.*\.traefik\.com`)"
+      # ...
+    Router-2:
+      rule: "Host(`foobar.traefik.com`)"
+      # ...
+```
+
+`Router-1` 是30个字符，而 `Router-2` 是26个字符，所以所有`foobar.traefik.com`请求都会被第一个`Router-1`所捕获。
+
+可以通过设置`priority`值，来指定匹配优先级（降序），设置为0表示按默认匹配：
+
+```yaml
+http:
+  routers:
+    Router-1:
+      rule: "HostRegexp(`.*\.traefik\.com`)"
+      entryPoints:
+      - "web"
+      service: service-1
+      priority: 1
+    Router-2:
+      rule: "Host(`foobar.traefik.com`)"
+      entryPoints:
+      - "web"
+      priority: 2
+      service: service-2
+```
+
 ### Middlewares
+
+中间件只在路由规则匹配，且请求到达服务处理之前生效。中间件的执行**顺序**与其在`Router`中声明顺序相同。
+
+
 
 ## 0x01 安装与启动
 
