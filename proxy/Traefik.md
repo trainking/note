@@ -230,6 +230,54 @@ http:
 
 中间件只在路由规则匹配，且请求到达服务处理之前生效。中间件的执行**顺序**与其在`Router`中声明顺序相同。
 
+示例：
+
+```yaml
+http:
+  routers:
+    router1:
+      service: myService
+      middlewares:
+        - "foo-add-prefix"
+      rule: "Host(`example.com`)"
+
+  middlewares:
+    foo-add-prefix:
+      addPrefix:
+        prefix: "/foo"
+
+  services:
+    service1:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1:80"
+```
+
+**可用中间件列表**:
+
+|中间件|目的|作用域|
+|:--|:--|:--|
+|AddPrefix|添加路径前缀|Path路径|
+|BasicAuth|Basic Auth机制|Authentication|
+|Buffering|缓存请求/相应|请求生命周期|
+|Chain|组合多个中间件|中间件工具|
+|CircuitBreaker|停止调用不健康服务|请求生命周期|
+|Compress|压缩响应|Content阶段|
+|DigestAuth|摘要身份验证（md5）|Authentication|
+|Errors|自定义错误页面|请求生命周期|
+|ForwardAuth|委托认证（调用第三方提供认证）|Authentication|
+|Headers|添加或者修改头部|Security|
+|IPWhiteList|Ip白名单|请求生命周期|
+|InFlightReq|限制同时链接数|请求生命周期|
+|PassTLSClientCert|在Header中添加客户端证书|Security|
+|RateLimit|限制会话频率|Security|
+|RedirectScheme|重定向|请求生命周期|
+|RedirectRegex|重定向（正则匹配）|请求生命周期|
+|ReplacePath|修改请求路径|Path路径|
+|ReplacePathRegex|修改请求路径（正则匹配）|Path路径|
+|Retry|出现错误时自动重试请求|请求生命周期|
+|StripPrefix|更改请求路径|Path路径|
+|StripPrefixRegex|更改请求路径|Path路径|
 
 
 ## 0x01 安装与启动
