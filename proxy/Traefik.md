@@ -22,6 +22,7 @@
     - [EntryPoints](#entrypoints-1)
   - [0x03 实践](#0x03-实践)
     - [将http请求重定向到https](#将http请求重定向到https)
+    - [使用第三方验证器验证](#使用第三方验证器验证)
 
 ## 0x00 概念
 
@@ -528,4 +529,40 @@ entryPoints:
 
   websecure:
     address: :443
+```
+
+### 使用第三方验证器验证
+
+```yaml
+http:
+  routers:
+    # Define a connection between requests and services
+    to-whoami:
+      # rule: "Host(`example.com`) && PathPrefix(`/whoami/`)"
+      rule: "PathPrefix(`/whoami/`)"
+       # If the rule matches, applies the middleware
+      middlewares:
+      - test-auth
+
+      # If the rule matches, forward to the whoami service (declared below)
+      service: whoami
+
+  middlewares:
+    # Define an authentication mechanism
+    # test-user:
+    #   basicAuth:
+    #     users:
+    #     - test:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/
+    test-auth:
+      forwardAuth:
+        address: http://192.168.1.30:1323/auth
+        authResponseHeaders:
+          - "X-Auth-User"
+
+  services:
+    # Define how to reach an existing service on our infrastructure
+    whoami:
+      loadBalancer:
+        servers:
+        - url: http://192.168.1.30:1323
 ```
