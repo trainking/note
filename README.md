@@ -19,3 +19,7 @@
 ## 负载均衡
 
 - [p2c算法](balance/p2c.md)
+
+## 序列化
+
+- [FlatBuffers](serizable/FlatBuffers.md)
