@@ -1,5 +1,16 @@
 # ClickHouse
 
+- [ClickHouse](#clickhouse)
+  - [安装部署](#安装部署)
+    - [docker](#docker)
+    - [命令行客户端](#命令行客户端)
+  - [库与表](#库与表)
+    - [创建库](#创建库)
+    - [创建表](#创建表)
+      - [MergeTree](#mergetree)
+      - [VersionedCollapsingMergeTree](#versionedcollapsingmergetree)
+  - [可视化工具](#可视化工具)
+
 ## 安装部署
 
 ### docker
@@ -36,6 +47,10 @@ CREATE TABLE [IF NOT EXISTS] [db.]table_name [ON CLUSTER cluster]
 ) ENGINE = engine
 ```
 
+#### MergeTree
+
+
+
 #### VersionedCollapsingMergeTree
 
 ```
@@ -57,3 +72,7 @@ PARTITION BY UserId Order By UserId;
 SELECT * FROM UAct FINAL
 ```
 将相同版本号撤销。
+
+## 可视化工具
+
+- [DBeaver](https://dbeaver.io/download/)
