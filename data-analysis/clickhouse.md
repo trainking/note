@@ -9,6 +9,7 @@
     - [创建表](#创建表)
       - [MergeTree](#mergetree)
       - [VersionedCollapsingMergeTree](#versionedcollapsingmergetree)
+      - [AggregatingMergeTree](#aggregatingmergetree)
   - [可视化工具](#可视化工具)
 
 ## 安装部署
@@ -98,6 +99,32 @@ PARTITION BY UserId Order By UserId;
 SELECT * FROM UAct FINAL
 ```
 将相同版本号撤销。
+
+#### AggregatingMergeTree
+
+```
+CREATE TABLE user_log
+(
+    user_id UInt64,
+    sn_name String,
+    login AggregateFunction(sum, UInt64),
+    is_first AggregateFunction(sum, UInt8),
+    insert_time datetime default now()
+)
+ENGINE = AggregatingMergeTree() PARTITION BY toYYYYMMDD(insert_time) ORDER BY insert_time SETTINGS index_granularity=8192;;
+```
+
+插入时必须使用`Insert select`语句：
+
+```
+insert into user_log_ag (user_id,login,is_first,sn_name) select user_id,sumState(login),sumState(is_first),minState(sn_name) from user_log GROUP BY user_id
+```
+
+查询:
+
+```
+select user_id,sn_name,sumMerge(is_first) from user_log_ag GROUP BY user_id,sn_name
+```
 
 ## 可视化工具
 
