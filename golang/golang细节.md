@@ -1,11 +1,13 @@
 # golang细节
 
 - [golang细节](#golang细节)
-  - [1. 如何理解经典语？](#1-如何理解经典语)
-    - [什么是共享内存呢？](#什么是共享内存呢)
-    - [通信来共享内存](#通信来共享内存)
-  - [2. defer](#2-defer)
-    - [defer约法三章](#defer约法三章)
+	- [1. 如何理解经典语？](#1-如何理解经典语)
+		- [什么是共享内存呢？](#什么是共享内存呢)
+		- [通信来共享内存](#通信来共享内存)
+	- [2. defer](#2-defer)
+		- [defer约法三章](#defer约法三章)
+	- [3. Channel](#3-channel)
+		- [3.1 关闭channel之后，channel的问题？](#31-关闭channel之后channel的问题)
 
 ## 1. 如何理解经典语？
 
@@ -161,3 +163,11 @@ func dd() int {
 }
 // return: 1
 ```
+
+## 3. Channel
+
+### 3.1 关闭channel之后，channel的问题？
+
+* 如果`chan`是无缓存的，则`send`和`recv`都会开始阻塞，直到双方就绪才会执行下一步，所以close之后，再`send`和`recv`都会触发`panic`
+* 如果`chan`是有缓存的，则`send`会`paic`，而`recv`可以将缓存区读完，最后返回0值，第二个返回`ok`是false结束
+* 未被初始化分配空间的`chan`是nil, `send`和`recv`都会`panic`
