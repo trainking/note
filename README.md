@@ -16,6 +16,7 @@
 ## golang
 
 - [golang细节](golang/golang细节.md)
+- [golang并发](golang/golang并发.md)
 
 ## 负载均衡
 
