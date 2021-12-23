@@ -6,6 +6,7 @@
     - [数据竞争](#数据竞争)
   - [并发原语](#并发原语)
     - [Mutex](#mutex)
+      - [Mutex实现](#mutex实现)
     - [RWMutex](#rwmutex)
     - [WaitGroup](#waitgroup)
     - [Cond](#cond)
@@ -32,6 +33,7 @@
 
 ### 数据竞争
 
+多协程访问同一数据块，就会发生数据竞争 (data race)。`golang` 提供了`-race`选项检查代码中的数据竞争。
 
 ## 并发原语
 
@@ -52,6 +54,20 @@ type Locker interface {
 * Mutex是**不可重入锁**，即持有此锁的携程，再次调用`Lock`会触发`panic`
 * Mutex必须调用`Lock/Unlock`必须成对出现，且必须`Lock`之后才能调用`Unlock`，不然`panic`， **谁申请，谁释放**
 * Mutex的零值即是一个`unlocked`状态的锁
+
+#### Mutex实现
+
+`Mutex`结构体实现:
+
+```
+type Mutex struct {
+	state int32  // 标识锁状态
+	sema  uint32  // 信号量，唤醒携程
+}
+```
+
+1. `Lock/Unlock`是对`state`进行CAS操作标记
+2. 锁有`正常状态`和`饥饿状态`, 饥饿状态下，锁优先给排队中的队头，正常状态下优先给新建申请者
 
 ### RWMutex
 
