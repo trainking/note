@@ -7,6 +7,13 @@
     - [3. 无法被动感知服务器状态变更](#3-无法被动感知服务器状态变更)
   - [http2概述](#http2概述)
     - [http2特性](#http2特性)
+  - [协议](#协议)
+    - [基于TCP建立会话](#基于tcp建立会话)
+    - [基于TLS/SSL](#基于tlsssl)
+      - [TLS通讯过程](#tls通讯过程)
+    - [帧](#帧)
+    - [消息](#消息)
+    - [流](#流)
 
 ## http1.1所遇到的问题
 
@@ -50,4 +57,47 @@
 * 服务器消息推送
     - 并行推送
 
+## 协议
+
 `http2`协议既可以基于`TCP`协议，也可以在`TLS`协议之上。然而在浏览器中，强制要求基于`TLS`协议，实现`http2`协议
+
+
+### 基于TCP建立会话
+
+在http请求头中, 使用`Connection`, `Upgrade`头升级为http2协议。 基于`TCP`协议的htt2通常被称为`h2c`。
+
+```http
+GET / HTTP/1.1
+Connection: Upgrade, HTTP2-Settings
+Upgrade: h2c
+HTTP2-Settings: AAAABBDDCCDDFS__
+
+HTTP/1.1 101 Switching Protocols
+Connection: Upgrade
+Upgrade: h2c
+```
+
+在这之后，客户端还需要向服务器发一个Magic帧，称之为`HTTP/2 Connection Preface`。
+
+```
+0x505249202a20485454502f322e300d0a0d0a534d0d0a0d0a
+```
+
+之后便是通用的发送设置帧
+
+### 基于TLS/SSL
+
+在TLS层ALPN（Application Layer Protocol Negotiation）拓展做协商，只认识http1.1的代理服务器不会干扰http2。基于TLS协议的http2，通常被称为`h2`。
+
+#### TLS通讯过程
+
+1. 验证身份：在第一步`client hello`与`sever hello`只见，如果服务器需要验证其身份，将发送证书确认
+2. 达成安全套件共识：协商使用哪种加密算法，客户端发送支持的协议集合，服务器端选择使用（RFC7301）
+3. 传递密钥：各自获取到相同的对称加密密钥
+4. 加密通讯：传输的数据，都需要对称加密后发送
+
+### 帧
+
+### 消息
+
+### 流
