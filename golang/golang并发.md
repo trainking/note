@@ -41,7 +41,7 @@
 
 `Mutex`是golang标准库`sync`提供的排他锁实现。实现了`sync.Locker`接口，接口定义如下:
 
-```
+```go
 type Locker interface {
 	Lock()    // 加锁
 	Unlock()  // 释放
