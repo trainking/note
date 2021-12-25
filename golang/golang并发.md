@@ -90,6 +90,17 @@ type RWMutex struct {
 }
 ```
 
+`RWMutex`实现的`sync.Locker`接口之外，还增加了两个`RLock/RUnlock`方法。用于操作读锁(共享锁)，读锁机制是通过`atomic`包的原子操作，操作标记量来实现。
+
+而写锁（排他锁）的实现，本质就是通过`Mutex`来实现。
+
+因此`RWMutex`有以下特性:
+
+* `RLock/RUnlock`与`Lock/Unlock`成对使用，不可交互，即：读锁只能读释放，写锁只能写释放
+* RWMutex只被加读锁时，可以被多个协程获取到读锁
+* RWMutex被加写锁时，只允许一个协程获取到锁，其他协程读锁和写锁都加不上
+* RWMutex写锁加锁时，会先调用`w.Lock`，防止其他携程进入加写锁，然后将`readerCount`减最大值置为负数，让读锁加不上；最后等所有已获得读锁释放，完成加锁
+
 ### WaitGroup
 
 ### Cond
