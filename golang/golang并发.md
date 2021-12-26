@@ -103,6 +103,50 @@ type RWMutex struct {
 
 ### WaitGroup
 
+`WaitGroup`是一个用于任务编排，解决**并发-等待**问题。在协程中添加一个`join`点，就会阻塞等待所有协程完成。
+
+标准库中，提供了这三个方法：
+
+```go
+
+    func (wg *WaitGroup) Add(delta int)  // 添加一个暂停点
+    func (wg *WaitGroup) Done()  // 结束标记
+    func (wg *WaitGroup) Wait()  // 等待结束
+```
+
+而`WaitGroup`的结构，则是:
+
+```go
+type WaitGroup struct {
+	noCopy noCopy
+
+	// 64bit(8bytes)的值分成两段，高32bit是计数值，低32bit是waiter的计数
+  // 另外32bit是用作信号量的
+  // 因为64bit值的原子操作需要64bit对齐，但是32bit编译器不支持，所以数组中的元素在不同的架构中不一样，具体处理看下面的方法
+  // 总之，会找到对齐的那64bit作为state，其余的32bit做信号量
+	state1 [3]uint32
+}
+```
+
+通过`state1`这个3个`uint32`元素来组成。对其方式是利用地址求于来计算:
+
+```go
+func (wg *WaitGroup) state() (statep *uint64, semap *uint32) {
+	if uintptr(unsafe.Pointer(&wg.state1))%8 == 0 {
+		return (*uint64)(unsafe.Pointer(&wg.state1)), &wg.state1[2]
+	} else {
+		return (*uint64)(unsafe.Pointer(&wg.state1[1])), &wg.state1[0]
+	}
+}
+```
+
+注意事项：
+
+* 需要注意，避免计数器的值变为负，会触发`panic`
+* `Add()`增加计数，`Done()`减少计数，尽量保持这种原则
+* 必须等所有`Add()`调用之后，再调用`Wait()`，不然会出现`panic`或不期望结果
+* 在`Wait()`未结束之前，`WaitGroup`不可被重用
+
 ### Cond
 
 ### Once
