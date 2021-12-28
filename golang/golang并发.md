@@ -149,6 +149,31 @@ func (wg *WaitGroup) state() (statep *uint64, semap *uint32) {
 
 ### Cond
 
+`Cond`是一个条件变量，用于等待或这宣布事件发生时协程的交汇点。简而言之，是协程通信的一种手段。与`channel`不同的是，他可以通过`Signal`来唤醒一个协程，使用`Broadcast`唤醒所有的协程。
+
+```go
+var c = sync.NewCond(&sync.Mutex{})
+
+	c.L.Lock()
+	for conditionTrue() == false {
+		c.Wait()
+	}
+	c.L.Unlock()
+
+  ...
+  c.Signal()
+
+  c.Broadcast()
+```
+
+需要注意的是：
+
+1. 对于触发`Wait`的条件或者事件的读取，需要使用`cond`初始化时的`Mutex`保证线程安全
+2. 进去`Wait`后，会将`c.L`先释放，然后等到收到信号退出`wait`时，又把`c.L`加上锁
+3. `Signal`是唤醒等待最久那一个的协程
+
+`Conde`使用较少，因为他的功能都可以使用`Channel`来代替。唯一优势点，是使用`Broadcast`唤醒所有协程，但`channel`也可以通过`close`的特性来实现。
+
 ### Once
 
 ### Pool
