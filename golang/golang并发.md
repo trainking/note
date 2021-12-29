@@ -176,6 +176,19 @@ var c = sync.NewCond(&sync.Mutex{})
 
 ### Once
 
+`Once`的语义是只此一次。可用作对变量的一次初始化，常用在实现单例模式中：
+
+```go
+
+var once sync.Once
+
+once.Do(funcation(){
+
+})
+```
+
+需要注意的是，`Once`的执行以来赋值的空间，所以意味着，我们常常使用声明成全局变量来使用它。
+
 ### Pool
 
 ### Context
