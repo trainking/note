@@ -13,6 +13,9 @@
     - [Cond](#cond)
     - [Once](#once)
     - [Pool](#pool)
+      - [示例](#示例)
+      - [小心的坑](#小心的坑)
+      - [第三方实现](#第三方实现)
     - [Context](#context)
   - [拓展原语](#拓展原语)
     - [Semaphore](#semaphore)
@@ -190,6 +193,44 @@ once.Do(funcation(){
 需要注意的是，`Once`的执行以来赋值的空间，所以意味着，我们常常使用声明成全局变量来使用它。
 
 ### Pool
+
+`sync.Pool`保存一组可独立访问的**临时**对象。它池化的对象在未来的某个时候会后无征兆地移除掉，被移除的对象，没有引用时，会被回收。
+
+`sync.Pool`有两个特性:
+
+1. `sync.Pool`本身是线程安全的
+2. `sync.Pool`不可在使用之后再复制使用
+
+#### 示例
+
+```go
+
+var buffers = sync.Pool{
+  New: func() interface{} { 
+    return new(bytes.Buffer)
+  },
+}
+
+func GetBuffer() *bytes.Buffer {
+  return buffers.Get().(*bytes.Buffer)
+}
+
+func PutBuffer(buf *bytes.Buffer) {
+  buf.Reset()
+  buffers.Put(buf)
+}
+```
+
+#### 小心的坑
+
+1. 内存泄漏，使用`sync.Pool`回收buffer的时候，**一定要检查回收对象的大小**。如果buffer太大，就不用回收了，避免内存泄露
+2. 内存浪费，定义的缓存池太大，而只是用部分时，则会造成浪费，定义多种级别内存池避免浪费。[bucketpool](https://github.com/vitessio/vitess/blob/main/go/bucketpool/bucketpool.go)
+3. 因为`sync.Pool`会毫无征兆回收对象，所以不适合用来池化长连接操作
+
+#### 第三方实现
+
+- [TCP池](https://github.com/trainking/pool)
+- [Work Pool](https://github.com/valyala/fasthttp/blob/9f11af296864153ee45341d3f2fe0f5178fd6210/workerpool.go#L16)
 
 ### Context
 
