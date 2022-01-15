@@ -20,6 +20,8 @@
       - [Context使用规则](#context使用规则)
   - [拓展原语](#拓展原语)
     - [Semaphore](#semaphore)
+      - [Golang拓展库实现](#golang拓展库实现)
+      - [常见错误](#常见错误)
     - [SingleFlight](#singleflight)
     - [CyclicBarrier](#cyclicbarrier)
     - [ErrorGroup](#errorgroup)
@@ -266,6 +268,30 @@ type Context interface {
 ## 拓展原语
 
 ### Semaphore
+
+**Semaphore**（信号量）是一种资源控制的并发模式。它定义了两种操作，P操作,V操作。
+
+- P操作（descrease, wait, acquire）是减少信号量计数值
+- v操作（increase, signal, release）是增加信号量的计数值
+
+**两种操作都是原子的**，信号量的值除了初始化以外，只能油P/V操作改变。
+
+#### Golang拓展库实现
+
+Golang拓展库的实现叫[Weighted](https://pkg.go.dev/golang.org/x/sync/semaphore):
+
+* `Acquire`：P操作，一次获取n个资源，如果没有足够的资源，调用者阻塞。可以通过第一个参数的context设置取消机制
+* `Release`: V操作，将n个资源释放
+* `TryAcquire`: 尝试获取n个资源，不会阻塞
+
+#### 常见错误
+
+1. 请求了资源未释放
+2. 释放了未请求的资源
+3. 长时间请求，即使未使用
+4. 不请求信号量，直接使用资源
+5. 释放的资源比请求的资源大，程序会panic
+6. 如果请求的资源比最大容量大，程序会永远阻塞
 
 ### SingleFlight
 
