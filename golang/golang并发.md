@@ -292,6 +292,7 @@ Golang拓展库的实现叫[Weighted](https://pkg.go.dev/golang.org/x/sync/semap
 4. 不请求信号量，直接使用资源
 5. 释放的资源比请求的资源大，程序会panic
 6. 如果请求的资源比最大容量大，程序会永远阻塞
+7. 多个信号量控制资源时，应注意[哲学家就餐问题](https://zh.wikipedia.org/wiki/%E5%93%B2%E5%AD%A6%E5%AE%B6%E5%B0%B1%E9%A4%90%E9%97%AE%E9%A2%98)
 
 ### SingleFlight
 
