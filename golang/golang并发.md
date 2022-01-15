@@ -17,6 +17,7 @@
       - [小心的坑](#小心的坑)
       - [第三方实现](#第三方实现)
     - [Context](#context)
+      - [Context使用规则](#context使用规则)
   - [拓展原语](#拓展原语)
     - [Semaphore](#semaphore)
     - [SingleFlight](#singleflight)
@@ -233,6 +234,34 @@ func PutBuffer(buf *bytes.Buffer) {
 - [Work Pool](https://github.com/valyala/fasthttp/blob/9f11af296864153ee45341d3f2fe0f5178fd6210/workerpool.go#L16)
 
 ### Context
+
+`context.Context`是`golang`标准库提供的信息穿透上下文。其接口定义了四个方法：
+
+```go
+type Context interface {
+    Deadline() (deadline time.Time, ok bool)
+    Done() <-chan struct{}
+    Err() error
+    Value(key interface{}) interface{}
+}
+```
+
+- **Deadline** 返回这个Context被取消的截至时间，无设置ok为false，多次调用返回相同的值
+- **Done** 放回一个Channel，当Context被取消时，此Channel会被close
+- **Err** 返回被Close的原因
+- **Value** 返回指定key关联的值
+
+`context.Background()` 和 `context.TODO()` 会返回一个非nil，空的Context。二者本质上是相同的，只是不同别名。在使用上还是需要遵循一定规则：
+
+- 所有要派生新的Context时，使用`context.Background()`
+- 不知道用什么Context时，用`context.TODO()`，后续再改动
+
+#### Context使用规则
+
+1. 使用Context时，会把函数放在参数的第一个位置
+2. 不用使用nil作为Context函数的值
+3. Context只是作为函数间上下文传递，不要持久化和长久保存，避免内存泄露
+4. 使用WithValue时，key的类型不应该是字符串类型或者其他内建类型，最好使用自定义类型
 
 ## 拓展原语
 
