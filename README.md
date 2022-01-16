@@ -1,12 +1,25 @@
 # note
 
-笔记
+- [note](#note)
+  - [反向代理](#反向代理)
+    - [nginx](#nginx)
+  - [rpc](#rpc)
+  - [golang](#golang)
+  - [Python](#python)
+  - [负载均衡](#负载均衡)
+  - [序列化](#序列化)
+  - [数据分析](#数据分析)
+  - [协议](#协议)
 
 ----
 
 ## 反向代理
 
 - [Traefik](proxy/Traefik.md) 
+
+### nginx
+
+- [静态站点实践](nginx/静态站点实践.md)
 
 ## rpc
 
@@ -17,6 +30,11 @@
 
 - [golang细节](golang/golang细节.md)
 - [golang并发](golang/golang并发.md)
+
+## Python
+
+- [高阶函数](python/高阶函数.md)
+- [脚本编程](python/脚本编程.md)
 
 ## 负载均衡
 
