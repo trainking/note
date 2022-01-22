@@ -296,6 +296,19 @@ Golang拓展库的实现叫[Weighted](https://pkg.go.dev/golang.org/x/sync/semap
 
 ### SingleFlight
 
+`SingleFlight` 是golang拓展包提供的请求合并包，提供了控制多个请求同时发生的情况下，只请求一次，可以很好的控制类似缓存击穿的情况。
+
+```go
+// key 表示请求，返回函数执行结果和，shared是否将v 分享给了多个调用者
+func (g *Group) Do(key string, fn func() (interface{}, error)) (v interface{}, err error, shared bool)
+
+// 与Do类似, 返回的是返回的的是chan
+func (g *Group) DoChan(key string, fn func() (interface{}, error)) <-chan Result
+
+// 忘记对该键的请求合并
+func (g *Group) Forget(key string)
+```
+
 ### CyclicBarrier
 
 ### ErrorGroup
