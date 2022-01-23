@@ -337,6 +337,28 @@ type CyclicBarrier interface {
 
 ### ErrorGroup
 
+`ErrGroup`是官方提供的，将大任务拆散多个小任务执行库。它和`WaitGroup`类似，但使用更加简单，且会返回一个`error`，将子任务的错误传递给调用者。
+
+```go
+// 创建一个errgroup，接收一个context,同时返回一个待cancel的context; 作为后续调用控制
+func WithContext(ctx context.Context) (*Group, context.Context)
+
+// 执行函数，传入一个函数作为执行体，该函数要返回error
+func (g *Group) Go(f func() error)
+
+// 等待所有任务完成，如果err有值则是执行错误
+func (g *Group) Wait() error
+```
+
+有两个缺点:
+
+1. 不能返回所有子任务的错误
+2. 发生error，并不会中断其他子任务的执行
+
+`1`可以通过一个`err chan`来收集，`2`则通过拓展go函数来实现：
+
+-[b站/errgroup](https://github.com/go-kratos/kratos/blob/v1.0.x/pkg/sync/errgroup/errgroup.go)
+
 ## 分布式实现
 
 ### Leader选举
