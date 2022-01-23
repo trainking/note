@@ -274,7 +274,7 @@ type Context interface {
 - P操作（descrease, wait, acquire）是减少信号量计数值
 - v操作（increase, signal, release）是增加信号量的计数值
 
-**两种操作都是原子的**，信号量的值除了初始化以外，只能油P/V操作改变。
+**两种操作都是原子的**，信号量的值除了初始化以外，只能由P/V操作改变。
 
 #### Golang拓展库实现
 
@@ -310,6 +310,30 @@ func (g *Group) Forget(key string)
 ```
 
 ### CyclicBarrier
+
+`CyclicBarrier`是循环栅栏的实现，常常用于进行一组`goroutine`同时执行的场景中。它可以被重复使用，所以被称之为循环栅栏。具体机制就是所有携程都在栅栏前等候，全部到齐就抬起栅栏放行。
+
+```go
+
+type CyclicBarrier interface {
+    // 等待所有的参与者到达，如果被ctx.Done()中断，会返回ErrBrokenBarrier
+    Await(ctx context.Context) error
+
+    // 重置循环栅栏到初始化状态。如果当前有等待者，那么它们会返回ErrBrokenBarrier
+    Reset()
+
+    // 返回当前等待者的数量
+    GetNumberWaiting() int
+
+    // 参与者的数量
+    GetParties() int
+
+    // 循环栅栏是否处于中断状态
+    IsBroken() bool
+}
+```
+
+`CyclicBarrier`看起来类似`WaitGroup`，但是使用比`WaitGroup`更加简单，且提供了观测函数，可以设定条件中断执行。
 
 ### ErrorGroup
 
