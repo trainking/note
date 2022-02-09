@@ -333,7 +333,7 @@ type CyclicBarrier interface {
 }
 ```
 
-`CyclicBarrier`看起来类似`WaitGroup`，但是使用比`WaitGroup`更加简单，且提供了观测函数，可以设定条件中断执行。
+`CyclicBarrier`看起来类似`WaitGroup`，但是使用比`WaitGroup`更加简单，且提供了观测函数，可以设定条件中断执行。而且其最大的用处**可以选择在携程内部中断**，等待其他携程的到达。
 
 ### ErrorGroup
 
