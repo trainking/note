@@ -28,6 +28,7 @@
   - [分布式实现](#分布式实现)
     - [Leader选举](#leader选举)
     - [分布式锁](#分布式锁)
+      - [官方实现:](#官方实现)
     - [队列](#队列)
     - [栅栏](#栅栏)
     - [STM](#stm)
@@ -438,6 +439,12 @@ func(em *EtcdMutex)UnLock(){
     em.lease.Revoke(context.TODO(),em.leaseID)
     fmt.Println("释放了锁")
 }
+```
+
+#### 官方实现:
+
+```golang
+https://pkg.go.dev/go.etcd.io/etcd/clientv3/concurrency#NewLocker
 ```
 
 ### 队列
