@@ -372,6 +372,12 @@ func (g *Group) Wait() error
 https://github.com/etcd-io/etcd/tree/main/raft
 ```
 
+`concurrency`包实现了选举的内容:
+
+```golang
+https://github.com/etcd-io/etcd/tree/v3.3.27/clientv3/concurrency
+```
+
 ### 分布式锁
 
 **分布式锁**是为了在不同机器中的携程，能控制资源的访问而设计。一般锁定的资源，必定是具有多个机器共享的资源。
