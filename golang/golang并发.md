@@ -29,8 +29,8 @@
     - [Leader选举](#leader选举)
     - [分布式锁](#分布式锁)
       - [官方实现:](#官方实现)
-    - [队列](#队列)
-    - [栅栏](#栅栏)
+    - [分布式队列](#分布式队列)
+    - [分布式栅栏](#分布式栅栏)
     - [STM](#stm)
 
 ## 概念
@@ -453,8 +453,10 @@ func(em *EtcdMutex)UnLock(){
 https://pkg.go.dev/go.etcd.io/etcd/clientv3/concurrency#NewLocker
 ```
 
-### 队列
+### 分布式队列
 
-### 栅栏
+### 分布式栅栏
 
 ### STM
+
+`STM`是指`Software Transaction Memory`，软件内部事务。
