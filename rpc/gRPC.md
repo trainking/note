@@ -47,11 +47,64 @@ message HelloReply {
 2. 生成代码
 
 ```shell
- protoc --go_out=. --go-grpc_out=. .\order.proto
+ protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative .\order.proto
 ```
 
 * `--go_out`指定生成message的*.pb.go文件
 * `--go-grpc_out`指定生成rpc的*.pb.go文件
+* `--go_opt=paths=source_relative` 指定`--go_out`使用相对路径
+* `--go-grpc_opt=paths=source_relative` 指定`--go-grpc_out`使用相对路径
 
 3. 创建服务端
+
+
+```golang
+var (
+	port = flag.Int("port", 50051, "The server port")
+)
+
+type server struct {
+	orderrpc.UnimplementedGreeterServer
+}
+
+func (s *server) SayHello(ctx context.Context, in *orderrpc.HelloRequest) (*orderrpc.HelloReply, error) {
+	log.Printf("Received: %v", in.GetName())
+	return &orderrpc.HelloReply{Message: "Hello " + in.GetName()}, nil
+}
+
+func main() {
+	flag.Parse()
+
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	if err != nil {
+		log.Fatalf("failed to listen: %s", err.Error())
+	}
+
+	s := grpc.NewServer()
+	orderrpc.RegisterGreeterServer(s, &server{})
+	log.Printf("server listening at %v", lis.Addr())
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
+}
+
+```
 4. 创建客户端
+
+```golang
+type OrderStub struct {
+	orderrpc.GreeterClient
+}
+
+func New(addr string) *OrderStub {
+	stub := &OrderStub{}
+
+	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		panic(err)
+	}
+	// defer conn.Close()
+	stub.GreeterClient = orderrpc.NewGreeterClient(conn)
+	return stub
+}
+```
