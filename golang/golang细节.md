@@ -171,3 +171,9 @@ func dd() int {
 * 如果`chan`是无缓存的，则`send`和`recv`都会开始阻塞，直到双方就绪才会执行下一步，所以close之后，再`send`和`recv`都会触发`panic`
 * 如果`chan`是有缓存的，则`send`会`paic`，而`recv`可以将缓存区读完，最后返回0值，第二个返回`ok`是false结束
 * 未被初始化分配空间的`chan`是nil, `send`和`recv`都会`panic`
+
+## 4. 代码结构
+
+### 4.1 internal目录
+
+**internal**目录是`Go 1.4`引入的目录机制，对于不想暴露给外部使用，只允许给本包内使用的包，可以放到此目录下。
