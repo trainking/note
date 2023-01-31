@@ -71,7 +71,6 @@ https://github.com/Zonciu/Box2DSharp
 根据关节的自由度，关节马达可以驱动关节连接的物体。可以使用一个马达来驱动一个肘的旋转。
 
 
-
 ### 物理知识
 
 #### 向量和坐标系
@@ -149,31 +148,82 @@ Box2D有两个物体阻尼，分为**线性阻尼（LinearDamping）**和**角�
 
 ### 1. 创建一个世界
 
-**Box2D**的程序都是基于一个`b2World`对象开始。**这个对象是管理内存，对象和模拟的物理中心**。创建一个`b2World`对象，需要两步：
+**Box2D**的程序都是基于一个`World`对象开始。**这个对象是管理内存，对象和模拟的物理中心**。创建一个`World`对象，需要两步：
 
-```cpp
-b2Vec2 gravity(0.0f, -10.0f);
-b2World world(gravity);
+```C#
+
+var world = new World(new Vector2(0, -10));
 ```
 
-也可以简化为：
+### 2. 创建一个盒子（地图）
 
-```cpp
-b2World world({ 0.0f, -10.0f });
+2D游戏的地图，通常是一个盒子。这里便需要用到`EdgeShape`这种特殊的形状：
+
+```c#
+            Body ground;
+            {
+                var bd = new BodyDef();
+                bd.Position.Set(0.0f, 20.0f);
+                ground = World.CreateBody(bd);
+
+                var shape = new EdgeShape();
+                var sd = new FixtureDef();
+                sd.Shape = shape;
+                sd.Density = 0.0f;
+                sd.Restitution = restitution;
+                sd.Friction = 1.0f;
+
+                // 左边
+                shape.SetTwoSided(new Vector2(-20.0f, -20.0f), new Vector2(-20.0f, 20.0f));
+                ground.CreateFixture(sd);
+
+                // 右边
+                shape.SetTwoSided(new Vector2(20.0f, -20.0f), new Vector2(20.0f, 20.0f));
+                ground.CreateFixture(sd);
+
+                // 上边
+                shape.SetTwoSided(new Vector2(-20.0f, 20.0f), new Vector2(20.0f, 20.0f));
+                ground.CreateFixture(sd);
+
+                // 下边
+                shape.SetTwoSided(new Vector2(-20.0f, -20.0f), new Vector2(20.0f, -20.0f));
+                ground.CreateFixture(sd);
+            }
 ```
 
-### 2. 创建一个地面
+> 形状一般不赋予物理参数，而是通过建立一个夹具来为其添加物理参数。
 
-首先，创建地面需要一个物体定义（Body Definition），通过物体定义指定地面体的初始位置：
+### 3. 创建物体
 
-```cpp
-b2BodyDef groundBodyDef;
-groundBodyDef.position.Set(0.0f, -10.0f);
+创建一个物体时，我们需要确定物体的形状，然后再添加夹具，为它添加物理参数：
+
+```C#
+            {
+                var shape = new CircleShape();
+                shape.Radius = 1.0f;
+
+                var fd = new FixtureDef();
+                fd.Shape = shape;
+                fd.Density = 1.0f;
+
+                var bd = new BodyDef();
+                bd.BodyType = BodyType.DynamicBody;
+                bd.Position.Set(-10.0f + 3.0f * 3, 20.0f);
+
+                bodyB = World.CreateBody(bd);
+                bodyB.UserData = 2;
+                fd.Friction = 1.0f;
+                fd.Restitution = 0.0f;
+                bodyB.CreateFixture(fd);
+                bodyB.SetAngularVelocity(0.0f);
+                //bodyB.SetLinearVelocity(new Vector2(1.0f, 0.0f));
+            }
 ```
 
-将物体传给世界对象，创建地面体：
+### 4. 碰撞检测
 
-```cpp
-b2Body* ground = world.CreateBody(&groundBodyDef);
+Box2D的碰撞检测，是通过给`World`增加一个`IContactListener`接触监听器：
+
+```C#
+World.SetContactListener(new PfContactListener());
 ```
-
