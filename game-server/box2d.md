@@ -227,3 +227,62 @@ Box2D的碰撞检测，是通过给`World`增加一个`IContactListener`接触�
 ```C#
 World.SetContactListener(new PfContactListener());
 ```
+
+需要实现以下方法：
+
+```C#
+    public class PfContactListener : IContactListener
+    {
+        /// <summary>
+        /// 开始接触
+        /// </summary>
+        /// <param name="contact"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public void BeginContact(Contact contact)
+        {
+            // 玩家相撞
+            if (contact.FixtureA.Body.UserData != null && contact.FixtureB.Body.UserData != null)
+            {
+                if ((int)contact.FixtureB.Body.UserData == 2)
+                {
+                    contact.FixtureB.Body.SetLinearVelocity(new Vector2(0.5f, 0.5f) * 2);
+                    contact.FixtureB.Body.UserData = 3;
+                }
+            } 
+        }
+
+        /// <summary>
+        /// 接触结束
+        /// </summary>
+        /// <param name="contact"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public void EndContact(Contact contact)
+        {
+        }
+
+        public void PostSolve(Contact contact, in ContactImpulse impulse)
+        {
+        }
+
+        public void PreSolve(Contact contact, in Manifold oldManifold)
+        {
+        }
+    }
+```
+
+#### 5. 开始世界模拟
+
+Box2D使用积分器的计算方法，积分器是模拟离散时间点的物理方程。即假设，游戏的整个过程，就像我们一页页翻看连环画一样。Box2D必须选择一个时间步长，物理引擎通常喜欢60H（1/60，即一秒60帧）这样的事件步长，但是在服务器跑这样的逻辑时，不能使用这么大的步长。
+
+除了积分器之外，Box2D还使用了一个更大的特性，叫做约束结算器（solver）。Solver一次解决模拟中的所有约束，一次一个。在Solver阶段，有两个阶段：**速度阶段**和**位置阶段**。
+
+在速度阶段，Solver算Body移动所需要的脉冲。在位置阶段，Solver算整个身体的位置，以减少重叠和关节脱离。每个阶段都有自己的迭代次数，此外，如果误差较小，位置阶段可以提前退出迭代。建议的Box2D的迭代次数，**速度阶段为8，位置阶段为3**。调整迭代次数，是性能和精度之间的一个权衡，使用较少的迭代次数可以提高性能，但是也意味着损失精度。
+
+> 时间步长和迭代次数完全无关
+
+```C# 
+float timeStep = 1 / 33;
+int velocityIterations = 6;
+int positionIterations = 2;
+world.Step(timeStep, velocityIterations, positionIterations);
+```
