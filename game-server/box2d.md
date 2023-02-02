@@ -32,7 +32,7 @@ https://github.com/Zonciu/Box2DSharp
 
 ### 物体（Body）
 
-`Body`是世界存在的基础对象，后续介绍的各种约束和夹具，形状等等，都是一个Strcut结构体。他们传递给Body，应用到World中。`Body`通过`BodyType`来定义不同类型的物体，有三种类型：
+`Body`是世界存在的基础对象，后续介绍的各种约束和载具，形状等等，都是一个Strcut结构体。他们传递给Body，应用到World中。`Body`通过`BodyType`来定义不同类型的物体，有三种类型：
 
 * StaticBody: 0质量，0速度，可以被手动移动
 * KinematicBody：0质量，用户指定的速度，可以被系统移动
@@ -46,30 +46,33 @@ https://github.com/Zonciu/Box2DSharp
 * CircleShape: 圆形
 * PolygonShape：多边形
 
+### 载具（Fixture）
+
+载具将形状绑定到物体之上，并具有一定的材质属性，比如密度(density), 摩擦(friction)和恢复(restitution)。
+
 ### 约束（Constraint）
 
 约束是消除物体自由度的物理连接，在2D世界中，物体有3个自由度（水平，垂直，旋转）。如果我们把一个物体钉在墙上(像钟摆那样), 那就把它约束到了墙上。这个时候,此物体就只能绕着钉子旋转, 所以这个约束消除了它2个自由度。
 
-### 接触约束（Contact Constraint）
+#### 接触约束（Contact Constraint）
 
 一种特殊的约束，设计的目的是为了防止刚体被穿透，也用于模拟摩擦和恢复。接触约束不用主动创建，她们会自动被Box2d生成。
-
-### 夹具（Fixture）
-
-夹具将形状绑定到物体之上，并具有一定的材质属性，比如密度(density), 摩擦(friction)和恢复(restitution)。
 
 ### 关节（Joint）
 
 关节就是中约束，将两个或多个Body固定在一起。Box2D支持不同的关节类型:转动(revolute),棱柱(prismatic),距离(distance)等。一些关节可以有限制(limits)和马达(motors)。
 
-### 关节限制（Joint Limit）
+#### 关节限制（Joint Limit）
 
 关节限制限定了一个关节的运动范围。例如，人类的胳膊只能在某一个角度范围内运动。
 
-### 关节马达（Joint Motor）
+#### 关节马达（Joint Motor）
 
 根据关节的自由度，关节马达可以驱动关节连接的物体。可以使用一个马达来驱动一个肘的旋转。
 
+### AABB
+
+AABB树是由AABB包围盒节点构成的二叉树，常用于碰撞检测。树的每一个节点，都是一个包围盒，且节点的包围盒包裹了所有子节点的包围盒。AABB树是一颗满二叉树，对象只存在于叶节点种，父节点的包围盒包含了子节点的包围盒。
 
 ### 物理知识
 
@@ -191,11 +194,11 @@ var world = new World(new Vector2(0, -10));
             }
 ```
 
-> 形状一般不赋予物理参数，而是通过建立一个夹具来为其添加物理参数。
+> 形状一般不赋予物理参数，而是通过建立一个载具来为其添加物理参数。
 
 ### 3. 创建物体
 
-创建一个物体时，我们需要确定物体的形状，然后再添加夹具，为它添加物理参数：
+创建一个物体时，我们需要确定物体的形状，然后再添加载具，为它添加物理参数：
 
 ```C#
             {
@@ -260,10 +263,12 @@ World.SetContactListener(new PfContactListener());
         {
         }
 
+        // 求解器执行之后
         public void PostSolve(Contact contact, in ContactImpulse impulse)
         {
         }
 
+        // 就解器执行之前
         public void PreSolve(Contact contact, in Manifold oldManifold)
         {
         }
