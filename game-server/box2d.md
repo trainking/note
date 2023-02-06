@@ -72,7 +72,7 @@ https://github.com/Zonciu/Box2DSharp
 
 ### AABB
 
-AABB树是由AABB包围盒节点构成的二叉树，常用于碰撞检测。树的每一个节点，都是一个包围盒，且节点的包围盒包裹了所有子节点的包围盒。AABB树是一颗满二叉树，对象只存在于叶节点种，父节点的包围盒包含了子节点的包围盒。
+
 
 ### 物理知识
 
@@ -291,3 +291,54 @@ int velocityIterations = 6;
 int positionIterations = 2;
 world.Step(timeStep, velocityIterations, positionIterations);
 ```
+
+## 重要概念
+
+### Contacts
+
+`Contacts`是由Box2D创建的对象，用于管理两个载具之间的碰撞。如果载具有子代，比如链行，则每个相关的子代都有一个`Contacts`。即，碰撞时发生再两两之间的，也就是所谓的**AABB**概念。
+
+> AABB树是由AABB包围盒节点构成的二叉树，常用于碰撞检测。树的每一个节点，都是一个载具，且节点的包围盒包裹了所有子节点的载具。AABB树是一颗满二叉树，对象只存在于叶节点种，父节点的载具包含了子节点的载具。
+
+一次碰撞，Box2D会涉及以下概念：
+
+* **接触点**：也称之为碰撞点，是两个形状开始重合的点。Box2D会尽量使用少的接触点，例如两个相同大小的圆，理论上的接触点只有一个。
+* **接触法线**：是一个单位向量，从一个形状指向另一个形状，按照惯例法线是从载具A指向载具B。
+* **分离度**: 分离度是穿透的反面，当行传重叠时，分离度就是负的。
+* **接触流行**：两个凸形多边形之间的接触最多可能产生2个接触点。这两个点都使用相同的法线，所以它们被分组为一个接触流形，这是一个连续接触区域的近似值。
+* **法线力**：是指在接触点上施加的、防止形状穿透的力。为方便起见，Box2D用脉冲工作。法线脉冲只是法线力乘以时间步长。
+* **切线力**：是指在一个接触点产生，模拟摩擦的力。也被存储为一个脉冲。
+
+Box2D试图重新使用一个时间步骤的接触力结果作为下一个时间步骤的初始猜测。Box2D使用接触ID来匹配不同时间步骤的接触点。这些ID包含几何特征指数，有助于区分一个接触点和另一个接触点。
+
+当两个夹具的AABBs重叠时就会产生接触。有时碰撞过滤会阻止接触点的产生。当AABBs不再重叠时，接触就会被破坏。
+
+#### Contacts事件
+
+一个Contacts产生时，经过了四个事件：
+
+1. `Begin Contact Event`：**当载具重叠时，就被调用**。传感器和非传感器都会被调用。这个事件只能在时间步长内发生。
+2. `End Contact Event`: **当载具不再重叠时，被调用**。传感器和非传感器都会被调用。当一个物体被摧毁时，也可能调用此事件。所以，这个事件可能发生再时间步长之外。
+3. `Pre-Solve Event`: **这个事件发生在碰撞检测之后，碰撞模拟之前**。每次通过碰撞处理，此事件就会被调用，可以在此事件种，选择禁止载具的碰撞。由于连续的碰撞检测，这个事件可能在一个时间步长内，多次调用。
+4. `Post-Solve Event`: **模拟之后调用**，在此事件中可以获得碰撞之后的数据，同时提供了分离度。
+
+> `Pre-Solve Event`事件中，很好确定点状的状态和速度。
+
+> 不要在这些事件改变物理世界的游戏逻辑，因为可能会导致出现无法处理的无主指针对象。最好是通过缓存数据，在时间步长之后处理。
+
+#### 碰撞过滤
+
+当并不希望某些物体之间放生碰撞时，可以通过实现`IContactFilter`接口，来控制碰撞的发生。
+
+```C#
+   public interface IContactFilter
+    {
+        /// Return true if contact calculations should be performed between these two shapes.
+        /// @warning for performance reasons this is only called when the AABBs begin to overlap.
+        bool ShouldCollide(Fixture fixtureA, Fixture fixtureB);
+    }
+```
+
+## 参考
+
+* [官方文档](https://box2d.org/documentation/index.html)
