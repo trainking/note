@@ -48,7 +48,7 @@ https://github.com/Zonciu/Box2DSharp
 
 ### 载具（Fixture）
 
-载具将形状绑定到物体之上，并具有一定的材质属性，比如密度(density), 摩擦(friction)和恢复(restitution)。
+载具将形状绑定到物体之上，并具有一定的材质属性，比如密度(density), 摩擦(friction)和恢复(restitution)。可以看作**包围盒**的实现。
 
 ### 约束（Constraint）
 
@@ -298,7 +298,7 @@ world.Step(timeStep, velocityIterations, positionIterations);
 
 `Contacts`是由Box2D创建的对象，用于管理两个载具之间的碰撞。如果载具有子代，比如链行，则每个相关的子代都有一个`Contacts`。即，碰撞时发生再两两之间的，也就是所谓的**AABB**概念。
 
-> AABB树是由AABB包围盒节点构成的二叉树，常用于碰撞检测。树的每一个节点，都是一个载具，且节点的包围盒包裹了所有子节点的载具。AABB树是一颗满二叉树，对象只存在于叶节点种，父节点的载具包含了子节点的载具。
+> AABB树是由AABB包围盒节点构成的二叉树，常用于碰撞检测。树的每一个节点，都是一个包围盒，且节点的包围盒包裹了所有子节点的包围盒。AABB树是一颗满二叉树，对象只存在于叶节点种，父节点的载具包含了子节点的包围盒。
 
 一次碰撞，Box2D会涉及以下概念：
 
