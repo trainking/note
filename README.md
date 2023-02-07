@@ -71,3 +71,4 @@
 
 - [Linux环境高级编程](linux/%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B.md)
 - [Scons](linux/Scons.md)
+- [Supervisor](linux/Supervisor.md)
