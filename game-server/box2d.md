@@ -30,13 +30,15 @@ https://github.com/Zonciu/Box2DSharp
 
 一个物理世界就是物体，形状和约束相互作用的集合。也可以看作，一个世界就是一个容器。将创建的2D对象，都是需要放到一个世界里面。或者说，依赖世界来创建。**Box2D**可以创建多个世界，但这通常是不必要的。
 
-### 物体（Body）
+### 刚体（Body）
 
 `Body`是世界存在的基础对象，后续介绍的各种约束和载具，形状等等，都是一个Strcut结构体。他们传递给Body，应用到World中。`Body`通过`BodyType`来定义不同类型的物体，有三种类型：
 
 * StaticBody: 0质量，0速度，可以被手动移动
 * KinematicBody：0质量，用户指定的速度，可以被系统移动
 * DynamicBody：正整数的质量，速度由力量决定，可以被系统移动
+
+> `KinematicBody`与`DynamicBody`之间的区别在于，`KinematicBody`并没有物理特性，即它的物理效果完全由碰撞检测之后，由我们自定义代码指定；而`DynamicBody`则会根据物理参数设定（质量，弹性系数，摩擦力等等）产生相应的物理效果
 
 ### 形状（Shape）
 
