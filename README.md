@@ -49,6 +49,7 @@
 - [Skynet笔记](game-server/Skynet.md)
 - [Box2D](game-server/box2d.md)
 - [帧同步服务器](game-server/lockstep.md)
+- [状态同步服务器](game-server/statesync.md)
 
 ## 负载均衡
 
