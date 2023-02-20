@@ -61,6 +61,7 @@
 ## 数据分析
 
 - [clickhouse](data-analysia/clickhouse.md)
+- [DynamoDB](data-analysia/dynamodb.md)
 
 ## 协议
 
