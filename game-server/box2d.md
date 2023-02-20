@@ -35,7 +35,7 @@ https://github.com/Zonciu/Box2DSharp
 `Body`是世界存在的基础对象，后续介绍的各种约束和载具，形状等等，都是一个Strcut结构体。他们传递给Body，应用到World中。`Body`通过`BodyType`来定义不同类型的物体，有三种类型：
 
 * StaticBody: 0质量，0速度，可以被手动移动
-* KinematicBody：0质量，用户指定的速度，可以被系统移动
+* KinematicBody：0质量，用户指定的速度，可以被系统移动。可以理解为一个有无穷大质量的的物体，Box2D中的KinematicBody的碰撞，只发生在KinematicBody与DynamicBody之间，不会与StaticBody和其他KinematicBody相互碰撞
 * DynamicBody：正整数的质量，速度由力量决定，可以被系统移动
 
 > `KinematicBody`与`DynamicBody`之间的区别在于，`KinematicBody`并没有物理特性，即它的物理效果完全由碰撞检测之后，由我们自定义代码指定；而`DynamicBody`则会根据物理参数设定（质量，弹性系数，摩擦力等等）产生相应的物理效果
