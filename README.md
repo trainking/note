@@ -50,6 +50,7 @@
 - [Box2D](game-server/box2d.md)
 - [帧同步服务器](game-server/lockstep.md)
 - [状态同步服务器](game-server/statesync.md)
+- [图神经网络](game-server/GNN.md)
 
 ## 负载均衡
 
