@@ -52,6 +52,7 @@
 - [帧同步服务器](game-server/lockstep.md)
 - [状态同步服务器](game-server/statesync.md)
 - [图神经网络](game-server/GNN.md)
+- [Recast & Detour](game-server/recastnav.md)
 
 ## 负载均衡
 
