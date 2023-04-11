@@ -5,6 +5,10 @@
 * 项目地址： https://github.com/recastnavigation/recastnavigation
 * 参考文档： http://recastnav.com/
 
+### 基础概念
+
+**导航网格**是由多个凸多边形（Convex Polygon, Poly Mesh）组成。`Poly Mesh`可简称为`Poly`，即一个个网格。导航网格种，寻路都是以`Poly`为单位。
+
 ### Recast
 **Recast**是先进的游戏导航网格构建工具，它可以快速地将**任何几何体**生成一套导航网格。Recast通过一个多步骤地栅格化过程，构建一个导航网格：
 
@@ -32,4 +36,13 @@
 3. 通过`Build\vs2022\recastnavigation.sln`，打开项目。
 4. 重新生成，并启动项目`RecastDemo`。
 
+#### 选择模式
+
+启动`RecastDemo`，首先要选择模式`Sample`，提供了三种模式:
+
+* `Solo Mesh`：单块生成
+* `Tile Mesh`: 分块生成
+* `Temp Obstacles`：分块并支持动态阻挡
+
+#### 选择地图
 
