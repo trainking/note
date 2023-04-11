@@ -51,8 +51,8 @@
 - [Box2D](game-server/box2d.md)
 - [帧同步服务器](game-server/lockstep.md)
 - [状态同步服务器](game-server/statesync.md)
-- [图神经网络](game-server/GNN.md)
 - [Recast & Detour](game-server/recastnav.md)
+- [强化学习在游戏AI中的应用](game-server/ai-ml.md)
 
 ## 负载均衡
 
