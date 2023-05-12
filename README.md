@@ -62,10 +62,11 @@
 
 - [FlatBuffers](serizable/FlatBuffers.md)
 
-## 数据分析
+## 数据库
 
-- [clickhouse](data-analysia/clickhouse.md)
-- [DynamoDB](data-analysia/dynamodb.md)
+- [clickhouse](data-analysis/clickhouse.md)
+- [DynamoDB](data-analysis/dynamodb.md)
+- [mongodb的最佳实践](data-analysis/mongodb.md)
 
 ## 协议
 
