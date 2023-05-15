@@ -138,3 +138,62 @@ MongoDB设置文档模型，采取三步：
 
 * 问题：精确统计问题，游戏排名
 * 模式：在文档中，增加几个统计字段，在更新时，通过`$inc`进行预聚合
+
+## 事务
+
+### 写操作事务
+
+#### writeConcern
+
+`writeConcern`时MongoDB中，决定一个写操作落到多少个节点上算写入成功。它的取值包括：
+
+* 0: 发起写操作，不关心是否成功
+* 1-max节点数：写操作需要落到多少个节点上才算成功
+* majority：写操作需要被复制到大多数节点（超过半数）才算成功
+* all：写操作必须写入到所有节点
+
+> 节点复制集不做任何设定（默认值），为了保证数据写入不丢，建议使用`majority`。
+
+```
+db.test.insert({count:1}, {writeConcern: {w: "marjority"}})
+```
+
+#### journal
+
+wrireConcern决定写操作到达多少个节点才算成功，`journal`则定义了如何才算成功，取值包括：
+
+* true: 写操作落到journal文件才算成功
+* false: 写操作到达内存就算成功
+
+```
+{j：true}
+```
+
+### 读操作食物
+
+在分布式数据库中，读操作需要明确两个问题：
+
+1. 从哪里读？关注数据节点所在的位置
+2. 什么样的数据可以读？关注数据的隔离性
+
+在MongoDB中，第一个问题使用`readPreference`解决，第二个问题使用`readConcern`解决。
+
+#### readPreference
+
+readPreference决定使用哪一个节点，满足读请求，取值包括：
+
+* primary: 只选择主节点
+* primaryPreferred：优先选择主节点，如不可选，则选从节点
+* secondary：只选择从节点
+* secondaryPreferred：优选选择从节点，如果从节点不可选，则选择主节点
+* nearest：选择最近节点，距离时通过ping time来决定的
+
+readPreference只能控制选择一类节点。通过给节点设置Tag，控制选择一个节点还是几个节点。
+
+> 在MongoDB中，Tag是指用于分片的标记，也称为shard key
+
+如何来指定readPreference，有以下途径：
+
+1. 通过连接url增加参数
+2. MongoDB的驱动API增加参数
+3. Mongo Shell，为每一个操作增加此参数
