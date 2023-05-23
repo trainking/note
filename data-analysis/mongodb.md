@@ -169,7 +169,7 @@ wrireConcern决定写操作到达多少个节点才算成功，`journal`则定�
 {j：true}
 ```
 
-### 读操作食物
+### 读操作事务
 
 在分布式数据库中，读操作需要明确两个问题：
 
@@ -197,3 +197,15 @@ readPreference只能控制选择一类节点。通过给节点设置Tag，控制
 1. 通过连接url增加参数
 2. MongoDB的驱动API增加参数
 3. Mongo Shell，为每一个操作增加此参数
+
+#### readConcern
+
+readConcern决定了一个节点上的数据，哪些时可读的，类似与关系型数据库的隔离级别。可选值包括：
+
+* availbale：读所有可用的数据
+* local：读取所有可用且属于当前分片的数据
+* majority：读取在大多数节点上提交完成的数据
+* linearizable：可线性化读取文档
+* snapshot：读取最近快照中的数据
+
+在复制集中`local`和`available`是**没有区别的**。两者的区别主要体现在分片集上。
