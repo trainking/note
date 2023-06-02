@@ -93,3 +93,18 @@ ClientRpc调用是从服务器上的对象发送客户端对象。可以从任�
         Debug.Log("Took damage:" + amount);
     }
 ```
+
+## 组件使用
+
+### Network Transform
+
+使用此组件，可以同步对象的Transform，在其`Sync Setting`中，有两种模式：`Client To Server`和`Server To Client`。
+
+**Client To Server**
+
+客户端计算`transform`结果，同步到服务器。适合用于同步玩家的位置，一个是要从客户端获取操作，二是，将计算压力留给客户端。
+
+**Server To Client**
+
+服务端计算`transform`结果，同步给各个客户端。适合同步被动物体，例如足球游戏中的足球，需要注意的是，此模式下有两个选项：Observes和Owner。Observes是观察者模式，对数据没有足够精确，会有穿模的效果。Owner则是以物体本身为准，精确，不会有穿模，但是计算量相对大。
+
