@@ -341,6 +341,45 @@ Box2D试图重新使用一个时间步骤的接触力结果作为下一个时间
     }
 ```
 
+## 7. 地图设计
+
+在地图设计中，很多时候，我们需要的一群物体，在一个盒子中运动。模拟出，3D游戏在2D游戏中的地图投影。这时候，还是会使用`EdgeShape`的多边形进行模拟。
+
+如，绘制一个圆形地图：
+
+```C#
+            var bd = new BodyDef();
+            bd.Position.Set(0f, 0f);
+            ground = World.CreateBody(bd);
+            var shape = new EdgeShape();
+            var sd = new FixtureDef();
+            sd.Shape = shape;
+            sd.Density = 0.0f;
+            sd.Restitution = 0.0f;
+            sd.Friction = 1.0f;
+            sd.UserData = new UserData()
+            {
+                Type= UserDataType.Platform,
+            };
+
+            float radius = setting.PlatformZone;
+            int segments = 32;
+
+            float anglePerSegment = 2.0f * (float)Math.PI / segments;
+            var prevVertex = new Vector2(radius * (float)Math.Cos(0.0f), radius * (float)Math.Sin(0.0f));
+
+            for (int i = 1; i <= segments; ++i)
+            {
+                float angle = i * anglePerSegment;
+                var vertex = new Vector2(radius * (float)Math.Cos(angle), radius * (float)Math.Sin(angle));
+
+                shape.SetTwoSided(prevVertex, vertex);
+                ground.CreateFixture(sd);
+
+                prevVertex = vertex;
+            }
+```
+
 ## 参考
 
 * [官方文档](https://box2d.org/documentation/index.html)
