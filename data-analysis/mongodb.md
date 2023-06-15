@@ -208,4 +208,5 @@ readConcern决定了一个节点上的数据，哪些时可读的，类似与关
 * linearizable：可线性化读取文档
 * snapshot：读取最近快照中的数据
 
-在复制集中`local`和`available`是**没有区别的**。两者的区别主要体现在分片集上。
+在复制集中`local`和`available`是**没有区别的**。两者的区别主要体现在分片集上。在进行分片的Chunk迁移时，指定local，只读取本地数据。**从主节点中读取数据时，默认是local。从从节点读取数据时，默认时available（向前兼容原因）。**
+MongoDB中，通过MVCC机制，维护不同版本的一致性。
