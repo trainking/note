@@ -23,3 +23,5 @@ https://download.qt.io/archive/qt/5.14/5.14.2/qt-opensource-windows-x86-5.14.2.e
 
 * 选择想要发布平台的编译器
 * 需要注册一个账号来使用
+
+> 需要安装对应的编译器，不然无法创建项目成功
