@@ -46,6 +46,10 @@
 - [OpenMP](cpp/OpenMP.md)
 - [Qt学习指南](cpp/qt.md)
 
+## Rust
+
+- [Rust问题](rust/rust问题.md)
+
 ## Game Server
 
 - [Skynet笔记](game-server/Skynet.md)
